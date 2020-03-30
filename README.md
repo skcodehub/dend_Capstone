@@ -5,14 +5,14 @@
 ##### and one dimension (date_dim) is seeded using SAS epoch date. The fact table is created after creating SAS data in parquet format, cleansing it and loading it to S3.
 ##### These files can be used so that analysis can be conducted on the data for number of arrivals per month, peak months for visitors, etc.
 
-##### The following file folders are created after the files are loaded to S3
-##### PARENT_BUCKET='capstoneimmi'
-##### SAS_DATA=s3a://capstoneimmi/sas-data-parquet/
-##### DEMOGR_DATA=s3://capstoneimmi/demo/
-##### VISA_DATA=s3://capstoneimmi/visa/
-##### PORT_DATA=s3://capstoneimmi/port/
-##### ADDR_ST_DATA=s3://capstoneimmi/addrstate/
-##### RES_CNTRY_DATA=s3://capstoneimmi/rescitycntry/
+###### The following file folders are created after the files are loaded to S3
+###### PARENT_BUCKET='capstoneimmi'
+###### SAS_DATA=s3a://capstoneimmi/sas-data-parquet/
+###### DEMOGR_DATA=s3://capstoneimmi/demo/
+###### VISA_DATA=s3://capstoneimmi/visa/
+###### PORT_DATA=s3://capstoneimmi/port/
+###### ADDR_ST_DATA=s3://capstoneimmi/addrstate/
+###### RES_CNTRY_DATA=s3://capstoneimmi/rescitycntry/
 
 ###### sql_queries.py
 ###### This script contains the queries needed to
