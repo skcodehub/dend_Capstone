@@ -1,6 +1,6 @@
 import configparser
 import psycopg2
-from sql_queries import create_table_queries, drop_table_queries
+from sql_queries import create_table_queries, drop_table_queries,drop_stage_queries,create_stage_queries
 
 
 def drop_tables(cur, conn):
@@ -12,16 +12,24 @@ def drop_tables(cur, conn):
     for query in drop_table_queries:
         cur.execute(query)
         conn.commit()
-
+        
+    for query in drop_stage_queries:
+        cur.execute(query)
+        conn.commit()
 
 def create_tables(cur, conn):
     """
     This function goes through the DDL create queries in sql_queries and executes them against the database.
     Parameters: This function requires connection and connection cursor as parameters
     """
+    for query in create_stage_queries:
+        cur.execute(query)
+        conn.commit()
+        
     for query in create_table_queries:
         cur.execute(query)
         conn.commit()
+
 
 
 def main():

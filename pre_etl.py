@@ -5,7 +5,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import udf, col
 from pyspark.sql.functions import year, month, dayofmonth, hour, weekofyear, date_format
 import boto3
-import psycopg2
+#import psycopg2
 
 config = configparser.ConfigParser()
 config.read('dwh.cfg')
@@ -32,6 +32,7 @@ def process_csv_data():
     2. set the delimiter
     3. remove tabs
     4. trim some records
+    5. cleaned up row 636 in I94_Port.csv ('AG') - to remove table and set delimiter to ;
     """
     #Use this section to load all the necessary files to S3 for further processing
     s3 = boto3.resource('s3')
@@ -84,11 +85,11 @@ def process_sas_data(spark):
     i94_valid_date = spark.sql("""SELECT DISTINCT CICID, I94YR, I94MON, I94CIT,I94RES, I94PORT,ARRDATE,I94MODE, 
                                 I94ADDR, DEPDATE, I94BIR, I94VISA, COUNT, 
                                 DTADFILE,
-                                VISAPOST, ENTDEPA, ENTDEPD, ENTDEPU, MATFLAG, BIRYEAR, 
+                                VISAPOST, OCCUP, ENTDEPA, ENTDEPD, ENTDEPU, MATFLAG, BIRYEAR, 
                                 CASE WHEN TRIM(dtaddto) IN ('183','10 02003','D/S','06 02002','/   183D','12319999') 
                                 THEN NULL 
-                                ELSE TO_DATE(TRIM(dtaddto), 'mm/dd/yyyy') END as dtaddto, GENDER, AIRLINE, ADMNUM, FLTNO, VISATYPE
-                                FROM immi_fact """)
+                                ELSE dtaddto END as DTADDTO, GENDER, INSNUM, AIRLINE, ADMNUM, FLTNO, VISATYPE
+                            FROM immi_fact """)
     #Write cleansed data to local drive 
     #i94_valid_date.write.parquet("sas_data_parquet_clean", "overwrite")
     #Read cleansed data from local drive
@@ -97,61 +98,17 @@ def process_sas_data(spark):
     #Load cleansed immi data to S3
     i94_valid_date.write.parquet("s3a://capstoneimmi/sas-data-parquet/", mode="overwrite")
 
-def load_date_dim(cur, conn):
-#def load_date_dim(spark):
-    """
-    This function builds date_dim upto 2010. To load earlier dates end_date_min could be lowered 
-    Parameters: This function requires connection and connection cursor as parameters
-    """
-    date_dim_insert = ("""INSERT INTO Date_Dim(calendar_date, date_id, day, month, year, weekday) VALUES( %s, %s, %s, %s, %s, %s);""")
-    # create timestamp column from original timestamp column
-    epoch = datetime.datetime(1960, 1, 1)
-    start_date = datetime.datetime(2016,1,1)
-    end_date = datetime.datetime(2016,12,31)
-    date_id = 20454
-    interval = datetime.timedelta(days =1)
-    columns = ['calendar_date', 'date_id', 'day', 'month', 'year', 'weekday']
-    #df = spark.createDataFrame(spark.sparkContext.emptyRDD[Row], columns)
-    while start_date <= end_date:
-        cur.execute(date_dim_insert, [start_date, date_id, start_date.day, start_date.month, start_date.year, start_date.weekday()])
-        conn.commit()
-        date_id= date_id+1
-        start_date = start_date+interval
-
-    start_date = datetime.datetime(2015,12,31)
-    end_date_min = datetime.datetime(2015,1, 1)
-    date_id = 20453
-    interval = datetime.timedelta(days = 1)
-
-    while start_date >= end_date_min:
-        cur.execute(date_dim_insert, [start_date, date_id, start_date.day, start_date.month, start_date.year, start_date.weekday()])
-        conn.commit()
-        date_id= date_id-1
-        start_date = start_date-interval    
-
 def main():
     """
     This is the main function that 
     1. sets the arguments to send to functions and
     2. invokes functions to process_sas_data, process_csv_data, load_date_dim
     """
-    process_csv_data()
-    
+ 
     spark = create_spark_session()
     process_sas_data(spark)
-    
-    
-    #load_date_dim(spark)  
-    
-    #commenting this as it is not needed since date_dim moved to etl
-    
-    #config = configparser.ConfigParser()
-    #config.read('dwh.cfg')
+    process_csv_data()
 
-    #conn = psycopg2.connect("host={} dbname={} user={} password={} port={}".format(*config['CLUSTER'].values()))
-    #cur = conn.cursor()
-    #load_date_dim(cur, conn)  
-    #conn.close()
 
 if __name__ == "__main__":
     main()
