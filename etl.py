@@ -28,6 +28,7 @@ def load_date_dim(cur, conn):
     This function builds date_dim
     Parameters: This function requires connection and connection cursor as parameters
     If more date range is required, end_date (higher) and end_date_min can be set
+    Referred github for ideas on how to seed the date
     """
     #Truncate date_dim before loading
     date_dim_truncate = """ TRUNCATE TABLE date_dim;"""
