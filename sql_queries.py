@@ -144,13 +144,13 @@ res_city_cntry_create = ("""CREATE TABLE IF NOT EXISTS res_city_country_dim(
 
 # STAGING TABLES
 #IAM_ROLE
-#
+#'s3://capstoneimmi/sas-data/'
 immigrant_stage_copy = ("""
                 TRUNCATE TABLE immigrant_stage;
-                COPY immigrant_stage FROM 's3://capstoneimmi/sas-data-parquet/'
+                COPY immigrant_stage FROM '{}'
                    IAM_ROLE '{}'
                   FORMAT parquet;
-    """).format(config['IAM_ROLE']['ARN'])
+    """).format(config['S3']['SAS_DATA'], config['IAM_ROLE']['ARN'])
 
 #'s3://capstoneimmi/demo/'
 demo_stage_copy= ("""
