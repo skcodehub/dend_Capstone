@@ -150,7 +150,7 @@ immigrant_stage_copy = ("""
                 COPY immigrant_stage FROM '{}'
                    IAM_ROLE '{}'
                   FORMAT parquet;
-    """).format(config['S3']['SAS_DATA'], config['IAM_ROLE']['ARN'])
+    """).format(config['S3']['SAS_DATA_C'], config['IAM_ROLE']['ARN'])
 
 #'s3://capstoneimmi/demo/'
 demo_stage_copy= ("""
