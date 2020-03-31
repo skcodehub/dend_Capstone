@@ -36,7 +36,7 @@ def process_csv_data():
     """
     #Use this section to load all the necessary files to S3 for further processing
     s3 = boto3.resource('s3')
-    BUCKET = "capstoneimmi"
+    BUCKET = config['S3']['PARENT_BUCKET']
    
     #Load demographic data to S3
     s3.Bucket(BUCKET).upload_file("us-cities-demographics.csv", "demo/us-cities-demographics.csv")
@@ -66,7 +66,7 @@ def process_sas_data(spark):
     df_spark =spark.read.format('com.github.saurfang.sas.spark').load('../../data/18-83510-I94-Data-2016/i94_apr16_sub.sas7bdat')
     
     #write to parquet
-    df_spark.write.parquet("sas_data_parquet", "overwrite")
+    df_spark.write.parquet("sas_data_parquet", "overwrite")    
     
     #Create a temporary view to perform data cleansing. After analyzing the data, came upon 
     #one column that is part of data model that needed cleansing
@@ -96,7 +96,9 @@ def process_sas_data(spark):
     #df_spark=spark.read.parquet("sas_data_parquet_clean/")
     
     #Load cleansed immi data to S3
-    i94_valid_date.write.parquet("s3a://capstoneimmi/sas-data-parquet/", mode="overwrite")
+    #s3a://capstoneimmi/sas-data/
+    out_path="{}".format(config['S3']['SAS_DATA'])
+    i94_valid_date.write.parquet(out_path, mode="overwrite")
 
 def main():
     """
