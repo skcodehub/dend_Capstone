@@ -1,0 +1,14 @@
+Clearly state the rationale for the choice of tools and technologies for the project.
+	I chose Redshift and S3 for this project as it is good to be able to access source data and have a robust RDBMS for loading dimension and fact table so that analysis can be done
+
+Propose how often the data should be updated and why.
+	If this is for analytical purposes, fact data should be updated at least on a monthly basis
+
+Write a description of how you would approach the problem differently under the following scenarios:
+	The data was increased by 100x. *Make sure that S3 and Redshift capacity is scaled to match the volume of the data
+
+The data populates a dashboard that must be updated on a daily basis by 7am every day. 
+	*Make sure the source data arrives to the S3 bucket at least 2 hours before the dashboard should be made available 
+	*Schedule the scripts (in Airflow or native scheduler) to load data to Redshift so that the data loads and quality checks are complete by 7 am
+The database needed to be accessed by 100+ people. 
+	*The data is distributed and database can scale to accommodate the number of users.
