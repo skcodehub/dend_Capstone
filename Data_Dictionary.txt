@@ -1,0 +1,73 @@
+Table date_dim as D {
+  calendar_date TIMESTAMP(6) [pk]  - Date in calendar
+  date_id integer -  SAS date numeric field which is number of days since epoch (1960-01-01)
+  day integer - Numeric day corresponding to the calendar date
+  month integer - Numeric month corresponding to the calendar date
+  year integer - 4 digit year corresponding to the calendar date
+  weekday integer
+}
+
+Table Residence_Dim as C{
+	code integer [pk] -- Numeric code of the city/country corresponding to immigrant residence
+	residence varchar -- Description of the city/country corresponding to immigrant residence
+}
+
+Table addr_state_dim as A {
+	state_code varchar [pk] -- Letter code of the State corresponding to immigrant address
+	state varchar  -- Name of the state corresponding to immigrant address
+}
+
+Table CITY_STATE_DEMOGRAPHIC_DIM as R {
+    city varchar [pk] -- US city name
+    state_code varchar [pk] -- US abbreviated state code
+	state varchar -- US state name
+    median_age decimal -- Median age of residents in the city
+    male_pop decimal -- Number of males in the city
+    female_pop decimal -- Number of females in the city
+    total_pop decimal -- Total population in the city
+    num_veterans decimal -- Number of veterans in the city
+    foreign_born decimal -- Number of foreign born people in the city
+    avg_household_size decimal -- Average number of people in the city
+    race varchar -- Race of city residents
+    count decimal -- Total count by race
+}
+
+
+Table visa_type_dim as V {
+    visa_code integer -- I94visa category
+    visa_name varchar [pk] -- I94visa category description
+}
+
+Table port_dim as P {
+    port_code varchar [pk] -- Abbreviated I94Port of entry
+    port_name varcharm -- Full I94Port of entry
+}
+
+Table Immigrant_Fact as F {
+	cicid numeric [pk] --cicid is a unique nummber associated with the record in the immigration file
+	i94yr integer -- 4 digit year
+	i94mon integer -- Numeric month
+	i94cit integer -- I94 numeric city code
+	i94res integer -- I94 numeric residence code
+	i94port varchar --I94 Port of entry abbrevation
+	arrdate integer --  Arrival Date in the USA. Converted to days since 1960-01-01
+	i94mode integer -- Mode of arrival - Sea, land, air, etc
+	i94addr varchar -- Address of residence in the USA
+	depdate integer -- Departure Date from the USA. Converted to days since 1960-01-01
+	i94bir integer -- Age of Respondent in Years
+	i94visa integer -- Visa category codes
+	count integer -- Summary of number of people arriving
+	dtadfile bigint -- Character Date Field - Date added to I-94 Files
+	visapost varchar -- Department of State where where Visa was issued
+	entdepa varchar -- Arrival Flag - admitted or paroled into the U.S.
+	entdepd varchar -- Departure Flag - Departed, lost I-94 or is deceased
+	entdepu varchar -- Update Flag - Either apprehended, overstayed, adjusted to perm residence 
+	matflag varchar -- Match flag - Match of arrival and departure records
+	biryear integer -- 4 digit year of birth
+	dtaddto bigint -- Character Date Field - Date to which admitted to U.S. (allowed to stay until)
+	gender varchar -- Non-immigrant sex
+	airline varchar -- Airline used to arrive in U.S.
+	admnum decimal -- Admission Number
+	fltno integer -- Flight number of Airline used to arrive in U.S.
+	visatype varchar -- Class of admission legally admitting the non-immigrant to temporarily stay in U.S.
+}
