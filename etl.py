@@ -93,7 +93,7 @@ def main():
     load_staging_tables(cur, conn)
     load_dim_tables(cur,conn)
     load_fact_data(cur, conn)
-    #load_date_dim(cur, conn)
+    load_date_dim(cur, conn)
     conn.close()
 
 
